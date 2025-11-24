@@ -1,0 +1,131 @@
+by ZYL
+系统：Ubuntu20/22 LTS
+平台：带N卡的PC/NX/AGX
+所需软件版本清单：
+cmake 3.16.3/3.22.1(即Ubuntu20/22使用apt下载的默认版本)
+cuda 11.8（推荐）/11.4
+cudnn 8.9.7.29
+Galaxy_Linux-x86_Gige-U3_32bits-64bits_1.5
+OpenCV 4.5.5（Ubuntu 20）/OpenCV 4.8.0（Ubuntu 22）
+TensorRT 8.5.1.7
+Eigen 3.3.7
+Ceres 1.14
+fmt 10.2.0/8.1.1（版本无所谓）
+MVS_STD_GML_V2.1 (HikVision sdk)（可选，使用海康相机的车需要）
+linuxSDK_V2.1.0.37
+yaml-cpp 1.2(海康相机驱动需要该组件)
+
+具体部署顺序与方法：
+注意：NX/AGX在刷机时可以直接使用sdk manager安装cuda cudnn tensorrt 和opencv，故跳过前几步骤直接从第7步开始
+
+1.全新安装Ubuntu 20 LTS/Ubuntu 22 LTS
+
+2.先安装英伟达显卡驱动，20系统下10/20系显卡直接使用附加驱动里的metapackage的535驱动即可（sever的也行），30系显卡需要按照另一篇手动安装的教程安装，40系卡建议使用ubuntu22/24,直接安装附加驱动的550open驱动
+
+3.安装OpenCV 4.5.5/4.8.0，参考我写的另一篇详细部署教程，注意cmake不需要安装新版，ffmepg也不需要安装
+
+4.安装cuda 11.8：sudo chmod a+x 文件名；处理后才能：sudo ./文件名 运行，注意在弹出的界面里不要选择安装cuda自带的显卡驱动（字符界面的操作逻辑是含“[X]”的表示选中，“[ ]”表示不选中，空格键可以更改选中状态），其他不用管，程序运行完成后，需要配置环境：
+命令：sudo  vim ~/.bashrc或sudo gedit ~/.bashrc，再弹出的文档尾部加上：
+export PATH=$PATH:/usr/local/cuda-11.8/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+之后wq退出后，更新环境：命令：source ~/.bashrc
+验证安装&版本查询：nvcc -V
+
+5.安装cudnn：解压后进入文件夹内，打开终端，运行：
+sudo cp include/cudnn*.h /usr/local/cuda-11.8/include
+sudo cp lib/libcudnn* /usr/local/cuda-11.8/lib64
+sudo chmod a+r /usr/local/cuda-11.8/include/cudnn*.h /usr/local/cuda-11.8/lib64/libcudnn*
+完成文件复制和附权即可，安装版本验证：cat /usr/local/cuda-11.8/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+
+注意：在Ubuntu 22安装完cudnn后使用sudo ldconfig命令会出现几条libxxxx.so.8 is not a symbolic link的问题，此时需要进行手动软连接，命令：
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_adv_infer.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_ops_infer.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_cnn_infer.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_adv_train.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_adv_train.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_ops_train.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_ops_train.so.8
+sudo ln -sf /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8.9.7 /usr/local/cuda-11.8/targets/x86_64-linux/lib/libcudnn_cnn_train.so.8
+
+6.安装tensorrt：解压后，命令：sudo gedit ~/.bashrc
+在弹出的文档结尾加上：
+export PATH=/home/ad/TensorRT-8.5.1.7/bin:$PATH（这行可以不加）
+export LD_LIBRARY_PATH=$PATH:/home/ad/TensorRT-8.5.1.7/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$PATH:/home/ad/TensorRT-8.5.1.7/lib::$LIBRARY_PATH
+或
+export PATH=$PATH:/home/ad/TensorRT-8.5.1.7/bin
+export LD_LIBRARY_PATH=/home/ad/TensorRT-8.5.1.7/lib:$LD_LIBRARY_PATH
+export LIBRARY_PATH=$LIBRARY_PATH:/home/ad/TensorRT-8.5.1.7/lib
+
+保存后刷新环境变量：
+命令：source ~/.bashrc
+验证安装：进入tensorrt所在文件夹下的samples/sampleOnnxMNIST文件夹下打开终端
+命令：make -j12
+编译完成后回到tensorrt文件夹下的bin文件夹下打开终端
+命令：./sampleOnnxMNIST
+出现字符拼成数字即说明安装成功
+
+注意:Ubuntu 22安装tensorrt后运行该验证示例无法正常make，会提示几条如下类型的报错，无视即可，其他软件能调用就行
+CUDA_INSTALL_DIR variable is not specified, using /usr/local/cuda by default, use CUDA_INSTALL_DIR=<cuda_directory> to change
+
+7.重点：在安装Eigen和ceres之前需要安装gflags和glogs，但是不要安装编译版，否则cmake编译程序时会出现glog未正确安装的问题，应安装apt版
+命令：sudo apt-get install libgoogle-glog-dev libgflags-dev
+
+8.先装eigen 3.3.7，才能装ceres 1.14
+
+9.安装eigen:先解压源码包，创建build文件夹，进入build下打开终端，eigen为头文件型软件，故不需要编译命令，cmake ..后直接安装。
+命令：cmake ..
+      sudo make install
+注意：安装后,头文件安装在/usr/local/include/eigen3/，但cmake不认这里，需要将eigen3和eigen3下的Eigen文件夹复制到/usr/include下，有些网络教程最后的复制命令是错的，应是：
+命令：sudo cp -r /usr/local/include/eigen3 /usr/include
+      sudo cp -r /usr/local/include/eigen3/Eigen /usr/include
+      
+10.安装ceres1.14：先解压源码包，创建build文件夹，进入build下打开终端
+命令：cmake ..
+      make -j12
+      sudo make install
+      
+11.接着安装fmt，也是先解压源码包，创建build文件夹，进入build下打开终端
+命令：cmake ..
+      make -j12
+      sudo make install
+      
+12.各个工业相机的驱动sdk的安装：
+Galaxy驱动：要使用：sudo chmod a+x 文件名，处理后：./文件名 运行
+迈德驱动（linuxSDK_V2.1.0.37）：直接运行解压目录下安装脚本：sudo ./install.sh
+
+13.海康相机驱动相对复杂，解压压缩包安装对应cpu架构的deb版(PC用x86_64,NX/AGX用aarch64)，安装完成后从文件管理器进入：/opt/MVS/lib/64（或aarch64），打开终端，执行以下命令复制文件：
+命令：
+sudo cp libMVRender.so /usr/lib
+sudo cp libMvCameraControl.so.4.1.2.2 /usr/lib
+sudo cp libMvCameraControl.so.4.3.0.4 /usr/lib #注意版本号，这里是把nx(前)和电脑（后）的版本的命令都写上了
+sudo cp libMvCameraControl.so /usr/lib
+
+14.安装yaml：也是先解压源码包，创建build文件夹，进入build下打开终端：
+命令：
+cmake -DYAML_BUILD_SHARED_LIBS=on ..
+-选项表示生成共享库
+make -j12
+sudo make install
+sudo ldconfig（更新一下共享库）
+头文件在/usr/local/include，库文件在/usr/local/lib
+
+15.安装卸载这几个软件时往往需要使用locate命令，需要mlocate包：
+命令：sudo apt install mlocate
+
+16.关于cmakelist里的CUDA_GEN:
+nx(Volta架构)为72,agx（专业计算版Ampere架构）为87，16/20系显卡为75（Turing架构），30系显卡为80/86（Ampere架构），40系显卡为89(Ada架构)
+若cmakelist数字写错，编译不会报错，而是会在运行时出现“engine bad files”报错
+
+17.nx/agx的系统使用sdk manager安装完整后自带cuda，cudnn，tensorrt和opencv，其他的组件则需要手动安装
+
+18.关于model下engine文件：
+engiene文件理论上相近架构的计算机下移植不需要重新生成，而跨显卡架构和tensorrt版本移植则需要重新由onnx文件推理生成engine文件，否则会出现无法运行的问题。
+推理方法：使用对应系统的tensorrt目录下的bin文件夹下的trtexec程序推理
+命令：./trtexec --onnx=/home/ad/xxxx.onnx --saveEngine=/home/ad/xxxx.engine
+
+注意：该命令在Ubuntu 22下不能加上sudo，否则可能报错：error while loading shared libraries: libnvinfer_plugin.so.8
+
+19.关于ssh图形化调试的问题：打开文件-三条杠，勾选显示隐藏文件便可在主目录看见隐藏的.bashrc文件，双击使用文件编辑器打开或命令：sudo vim ~/.bashrc使用vim打开，添加：
+export DISPLAY = "192.168.XX.XX:0.0"
+保存后即可使用图形化的ssh远程调试，但是带来的问题是会时连接显示器本地运行有imshow的opencv程序无法使用图形界面，会在程序本地运行时出现“Window_GTK.cpp初始化失败”的问题
+所以需要外接显示器调试时需要在添加的这行前加上“#”来注释掉这句，也可以在程序代码中注释掉使用imshow相关的行，此时可以打开内录模式以用来查看图像

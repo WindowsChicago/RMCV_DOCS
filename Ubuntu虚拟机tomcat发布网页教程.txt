@@ -1,0 +1,38 @@
+示例环境：Ubuntu 20.04 vm17 nat网络模式 tomcat 8.5.75
+
+1.安装java8
+命令：
+sudo apt update
+apt search jdk
+sudo apt install openjdk-8-jdk
+
+2.验证安装
+命令：
+java -version
+有JDK VM的反馈则安装成功
+
+3.下载tomcat
+地址：https://mirrors.huaweicloud.com/apache/tomcat/
+选择编译好的bin文件夹下的文件下载，此为华为提供的镜像站，官网tomcat8及以前的版本已经无法下载会报错404
+建议下载tomcat8/9，这里使用的是“apache-tomcat-8.5.75.tar.gz”
+
+4.启动tomcat
+下载的tag.gz文件放到主文件夹（别的地方也行）下，解压得到apache-tomcat-8.5.75文件夹，进入该文件夹下的“bin”文件夹，在此启动终端
+命令：
+./startup.sh
+出现tomcat started字样即成功启动tomcat，此时在虚拟机内的浏览器下访问“localhost:8080”可访问tomcat的管理网页
+
+5.部署网页
+将需要发布的网页文件夹复制到apache-tomcat-8.5.75文件夹下的webapps文件夹下（这里的实例文件夹名为“Personal Introduction”，其下有“index.html”),接着将webapps文件夹下的ROOT文件夹下的“WEB-INF”文件夹复制到需要发布的网页文件夹下（本实例即将该文件夹复制到“Personal Introduction”文件夹下），复制完成后，此时在虚拟机内浏览器访问“http://localhost:8080/Personal Introduction/index.html”便可以访问该实例网页
+
+6.查询虚拟机ip地址
+命令：ip addr
+在返回的文字中“inet”后紧跟着的第一串数字即为虚拟机ip地址，实例是“192.168.153.128”
+
+7.主机访问虚拟机发布的网页
+打开主机的浏览器，将5中的地址中的“localhost”替换为6中查询到的虚拟机ip地址，即可使用主机访问虚拟机发布的网页，实例是“http://192.168.153.128:8080//Personal Introduction/index.html”
+
+8.关闭tomcat
+在startup.sh存在的bin文件夹下启动终端
+命令：./shutdown.sh
+即可关闭tomcat
