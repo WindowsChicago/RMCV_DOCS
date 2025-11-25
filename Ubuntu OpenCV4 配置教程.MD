@@ -87,7 +87,7 @@ sudo apt install python3-dev python3-numpy（python3支持（首次安装了pyth
 
 如果需要安装带cuda增强的版本，则还需要安装nvidia显卡驱动、cuda和cudnn，注意OpenCV从4.5开始才支持CUDA12,安装方法见我的另一篇文章
 
-##### **特别的，对于Jetson开发板，可以使用SDK manger安装OpenCV，但是如果需要其他版本或者需要启用cuda增强，即使使用了速度快sdk manager安装了opencv也需要走上面的步骤补充依赖（主要是需要libgtk2.0-dev，在jetpack6下也能正常安装无需aptitude）**
+##### 特别的，对于Jetson开发板，可以使用SDK manger安装OpenCV，但是如果需要其他版本或者需要启用cuda增强，即使使用了sdk manager安装了opencv也需要走上面的步骤补充依赖（主要是需要libgtk2.0-dev，在jetpack6下也能正常安装无需aptitude）
 
 #### 2.解压源码
 
@@ -376,7 +376,7 @@ int main(int argc, char* argv[]) {
 
     //从文件中读入图像
     Mat img = imread(imagename, 1);
-     
+
     //如果读入图像失败
     if (img.empty()) {
         fprintf(stderr, "Can not load image %s\n", imagename);
@@ -384,7 +384,7 @@ int main(int argc, char* argv[]) {
     }
     //显示图像
     imshow("image", img);
-     
+
     //此函数等待按键，按键盘任意键就返回
     waitKey();
     return 0;
@@ -414,13 +414,13 @@ int main(int argc, char* argv[]) {
                 "-I","/usr/local/include/",
                 "-I","/usr/local/include/opencv4/",
                 "-I","/usr/local/include/opencv4/opencv2",
-     
+
                 /* 项目所需的库文件路径 */
                 "-L", "/usr/local/lib",
-     
+
                 /* OpenCV的lib库 */
                 "/usr/local/lib/libopencv_*",
-     
+
             ],
             "options": {
                 "cwd": "${fileDirname}"
@@ -483,7 +483,7 @@ int main(int argc, char* argv[]) {
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-            
+
 
                 "/usr/local/include/opencv4"
             ],
