@@ -69,8 +69,6 @@ Only ever fast-forward
 
 输出git版本即说明安装成功
 
-
-
 #### 二、Ubuntu git 安装：
 
 Ubuntu及debian系的linux系统安装git较为方便：
@@ -88,8 +86,6 @@ git --version
 #修改默认分支为main（原默认为master）
 git config --global init.defaultBranch main
 ```
-
-
 
 #### 三、配置ssh并连接github账户：
 
@@ -112,8 +108,6 @@ git config --global user.email "你的邮箱"
     git config --list
 
 输出内容里会有默认分支和用户名以及邮箱
-
-
 
 3.生成 SSH 密钥（建议，用于 GitHub 认证）
 GitHub通过HTTPS协议（密码）或者SSH验证身份。其中：
@@ -246,12 +240,6 @@ ssh -T git@github.com
 ```
 
 如果配置正确，你应该看到以下输出：
-
-代码语言：javascript
-
-AI代码解释
-
-
 
 ```javascript
 Hi <your-username>! You've successfully authenticated, but GitHub does not provide shell access.

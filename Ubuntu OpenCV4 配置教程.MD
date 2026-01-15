@@ -14,7 +14,7 @@ Jetpack 6 官方自带为4.8.0不带cuda增强，经实测可以编译4.10.0带c
 
 #### 1.安装依赖
 
-##### 先安装基础依赖：
+##### （1）先安装基础依赖：
 
 ```
 sudo apt install -y g++
@@ -35,46 +35,32 @@ sudo aptitude install libgtk2.0-dev
 
 选择可以没有gtk后面没有（未安装）字样的方案输入y，并且这样安装完gtk后4.5.5也无法使用gtk，只能安装4.8.0/4.10.0，执行完后再执行上面的命令，安装其他必需依赖
 
-##### 安装cmake：
+##### （2）再安装cmake：
+
+**方法1：使用apt安装（推荐）**
 
 ```
 sudo apt install -y cmake
 ```
 
-使用apt安装时ubuntu 20一般是3.16,ubuntu22一般是3.22
+**使用apt安装时ubuntu 20一般是3.16,ubuntu22一般是3.22**
 
-也可以编译安装 某个特定版本（**不建议使用**，apt的已经够了）：
-1.先安装openssl：
+**方法2：**也可以编译安装 某个特定版本（**不建议使用**，apt版本一般已经够了）：
 
 ```
+//1.先安装openssl：
 sudo apt-get install libssl-dev
-```
-
-2.下载源码的tar.gz包，解压，进入目录打开终端，输入：
-
-```
+//2.下载源码的tar.gz包，解压，进入目录打开终端，输入：
 ./configure
-```
-
-3.无报错则接着：
-
-```
+//3.无报错则接着：
 make -j$(nproc)
-```
-
-4.编译完成后：
-
-```
+//4.编译完成后：
 sudo make install
-```
-
-5.最后验证安装：
-
-```
+//5.最后验证安装：
 cmake --version
 ```
 
-##### 其他可选依赖安装命令：
+##### （3）其他可选依赖安装命令（一般不需要）：
 
 ```
 sudo apt install libxvidcore-dev libx264-dev
@@ -85,15 +71,15 @@ sudo apt install libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev（streamer
 sudo apt install python3-dev python3-numpy（python3支持（首次安装了python的库，但make报错了，之后删了这两个库，若不使用python，建议不安装））
 ```
 
-如果需要安装带cuda增强的版本，则还需要安装nvidia显卡驱动、cuda和cudnn，注意OpenCV从4.5开始才支持CUDA12,安装方法见我的另一篇文章
+**注意：如果需要安装带cuda增强的版本，则还需要安装nvidia显卡驱动、cuda和cudnn，注意OpenCV从4.5开始才支持CUDA12,安装方法见我的另一篇文章**
 
 ##### 特别的，对于Jetson开发板，可以使用SDK manger安装OpenCV，但是如果需要其他版本或者需要启用cuda增强，即使使用了sdk manager安装了opencv也需要走上面的步骤补充依赖（主要是需要libgtk2.0-dev，在jetpack6下也能正常安装无需aptitude）
 
-#### 2.解压源码
+#### 2.下载并解压源码
 
-解压opencv源码文件到一个文件夹，在该文件夹下新建一个叫build的文件夹，在此文件夹下打开终端
+下载解压本体源码：访问https://github.com/opencv/opencv/releases下载opencv主体源码包，选择需要的版本4.8.0/4.10.0的Source code（zip或tar.gz皆可），解压opencv主体的源码包（opencv-4.x.0.zip）到一个文件夹，在该文件夹下新建一个叫build的文件夹，在此文件夹下打开终端
 
-如果需要扩展组件，将扩展组件源码解压后复制该文件夹到opencv源码根目录下或者某个位置（一会儿需要用）
+**注意：**如果需要扩展组件，访问https://github.com/opencv/opencv_contrib/tags下载opencv附加扩展源码包，选择下载和主体相同版本的包，将扩展组件的源码包（opencv_contrib-4.x.0.zip）解压，之后复制该文件夹到opencv本体源码根目录下或者某个特定位置（一会儿需要用到这个扩展包源码文件夹的地址）
 
 #### 3.预处理
 
@@ -265,7 +251,7 @@ sudo make install
 
 安装编译完成的组件
 
-#### 5.配置pkg-config环境
+#### 5.配置pkg-config环境（编译时选择启用pkg-config的才需要执行此步）
 
 先打开文件，点击其他位置，点击计算机，进入系统根目录，查看/usr/local/lib/pkgconfig/下是否存在opencv4.pc文件，若不存在则到opencv安装包解压目录的build/unix-install下寻找并复制到pkgconfig下
 接着命令：

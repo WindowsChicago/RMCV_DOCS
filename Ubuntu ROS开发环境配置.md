@@ -16,6 +16,3 @@ wget http://fishros.com/install -O fishros
 方法一：使用fishros安装
 仍旧使用上面介绍的方法，选择ROS2即可，Ubuntu20选foxy，22只能选Humble，20可以自动使ROS1（noetic）和2（foxy）共存
 方法二：使用apt安装（humble版教程链接地址：https://fishros.org/doc/ros2/humble/Installation/Ubuntu-Install-Debians.html）
-1.
-4.安装Docker
-仍然使用2中命令，选择Docker即可自动安装
