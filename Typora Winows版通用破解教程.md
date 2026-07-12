@@ -1,4 +1,4 @@
-## Typora 通用破解教程
+## Typora Windows版通用破解教程
 
 **by ZYL**
 
