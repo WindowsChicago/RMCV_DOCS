@@ -1,0 +1,48 @@
+NX/AGX这类arm64架构的ubuntu由于刷机时默认是英文系统，导致无法使用图形界面的“软件和更新”来更换国内的软件源，故需要手动修改软件源，并且jetson采用arm64的处理器，其软件源不能使用常规ubuntu通道，需要使用ubuntu-port通道
+1.命令：
+sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak
+sudo vim /etc/apt/sources.list
+sudo gedit /etc/apt/sources.list
+
+2.在第一步的vim界面下先按键盘上的“insert”键进入“插入”模式，根据不同系统在将以下相应的内容粘贴进文件里：
+
+#中科大源（Ubuntu 20 ARM64）
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ focal main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ focal main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-security main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-updates main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-backports main restricted universe multiverse
+
+# 预发布软件源，不建议启用
+# deb https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-proposed main restricted universe multiverse
+# deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ focal-proposed main restricted universe multiverse
+
+#中科大源（Ubuntu 22 ARM64）
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-security main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-security main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-updates main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-updates main restricted universe multiverse
+
+deb https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-backports main restricted universe multiverse
+deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-backports main restricted universe multiverse
+
+# 预发布软件源，不建议启用
+# deb https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-proposed main restricted universe multiverse
+# deb-src https://mirrors.ustc.edu.cn/ubuntu-ports/ jammy-proposed main restricted universe multiverse
+
+粘贴完毕后按一下esc键退出插入模式，接着输入“:wq”,保存文件并退出
+
+3.更新apt
+sudo apt-get update
+若终端里不报错即换源成功
+
